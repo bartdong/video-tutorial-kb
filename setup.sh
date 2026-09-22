@@ -42,13 +42,17 @@ if command -v tesseract >/dev/null 2>&1; then
     fi
     echo "    chi_sim     缺失 → 下载 chi_sim.traineddata 到 $TESSDATA_DIR"
     if [ -d "$TESSDATA_DIR" ] && [ -w "$TESSDATA_DIR" ]; then
+      # 直连 raw.githubusercontent 在国内常超时,优先走 gh-proxy 镜像,失败再回退直连
       curl -fL --connect-timeout 15 --max-time 180 \
-        "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/main/chi_sim.traineddata" \
-        -o "$TESSDATA_DIR/chi_sim.traineddata"
+        "https://gh-proxy.com/https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/main/chi_sim.traineddata" \
+        -o "$TESSDATA_DIR/chi_sim.traineddata" \
+        || curl -fL --connect-timeout 15 --max-time 180 \
+          "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/main/chi_sim.traineddata" \
+          -o "$TESSDATA_DIR/chi_sim.traineddata"
       echo "    chi_sim     已下载"
     else
       echo "    [警告] tessdata 目录不可写($TESSDATA_DIR),请手动:"
-      echo "      curl -L https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/main/chi_sim.traineddata -o \"$TESSDATA_DIR/chi_sim.traineddata\""
+      echo "      curl -L https://gh-proxy.com/https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/main/chi_sim.traineddata -o \"$TESSDATA_DIR/chi_sim.traineddata\""
       MISSING=1
     fi
   fi

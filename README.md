@@ -92,3 +92,21 @@ assets/
 - 中文口播 small 模型只错同音字（寒树→函数），`FIXES` 字典已内置 20 条；换 UP 主后通读一遍分段稿补新口癖
 - 旁白语速密度对「全程口播型」UP 主区分度低 → **术语首次出现时间是更强的定位信号**
 - 480p 对 OCR 板书够用（手写体识别率约 60%），公式精确结构以转写稿为准
+
+## 许可
+
+本项目代码采用 **MIT**（见 `LICENSE`）。
+
+运行时依赖（均为外部调用，不随本仓库分发，各自遵循其许可）：
+
+| 组件 | 许可 | 说明 |
+| --- | --- | --- |
+| [whisper.cpp](https://github.com/ggml-org/whisper.cpp) | MIT | `setup.sh` 拉取源码编译 `whisper-cli` |
+| ggml whisper 模型（`ggerganov/whisper.cpp`） | MIT | 权重文件，Hugging Face 下载 |
+| yt-dlp | Unlicense | **注意**：仅 git 源码 / PyPI wheel 是 Unlicense；官方发布的 PyInstaller 打包二进制含 GPLv3+ 代码，整体按 GPLv3+。本项目只做命令行调用，不链接、不复制其代码，无传染风险 |
+| ffmpeg / ffprobe | LGPL 2.1+（默认构建常含 GPL 组件） | 仅命令行调用 |
+| tesseract | Apache-2.0 | 仅命令行调用；`chi_sim` 语言包需自备 |
+
+以上组件均以**独立进程命令行调用**方式使用，本项目不含其任何源码，因此许可证互不传染。
+
+**内容责任**：本仓库只是工具。下载和处理视频时请遵守目标平台的服务条款与版权法——教程视频的著作权归原作者所有，转写稿 / 抽帧仅作个人学习用途，请勿再分发他人受版权保护的原始内容。

@@ -28,9 +28,10 @@ cd ~/.workbuddy/skills/video-tutorial-kb
 
 `setup.sh` 会：
 
-1. 检查 `ffmpeg` / `ffprobe` / `tesseract`（含 `chi_sim` 语言包）/ `yt-dlp`
-2. 编译 `whisper.cpp` 的 `whisper-cli` 到 `scripts/`（源码现拉现编，产物不入库）
-3. 下载 whisper 模型到 `assets/`（默认 `ggml-small.bin`，487MB；磁盘紧张可用 `ggml-base.bin`）
+1. 检查 `ffmpeg` / `ffprobe` / `tesseract` / `yt-dlp`
+2. 若缺 `chi_sim` 语言包，自动下载 `chi_sim.traineddata` 到 tessdata 目录（OCR 板书依赖）
+3. 编译 `whisper.cpp` 的 `whisper-cli` 到 `scripts/`（源码现拉现编，产物不入库）
+4. 下载 whisper 模型到 `assets/`（默认 `ggml-small.bin`，487MB；磁盘紧张可用 `ggml-base.bin`）
 
 > macOS 源码编译有个坑：CLT 环境下 `clang++` 找不到 C++ 标准库头，`SDKROOT` / `CMAKE_OSX_SYSROOT` 都无效，
 > 必须显式加 `-isystem $(xcrun --show-sdk-path)/usr/include/c++/v1`。`setup.sh` 已内置。

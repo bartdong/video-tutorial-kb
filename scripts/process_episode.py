@@ -47,14 +47,19 @@ def run(cmd, **kw):
 
 
 def find_ytdlp() -> str:
-    """定位 yt-dlp:PATH → 受管 venv → 报错提示安装方式。"""
-    import shutil
+    """定位 yt-dlp:PATH → 受管 Python 的 bin 目录 → 报错提示安装方式。
+
+    注:yt-dlp 通常随受管 Python 装进其 bin/(如 versions/<ver>/bin/yt-dlp),
+    而非某个 venv 的 envs/default/bin,故用 glob 探测所有候选,不猜死路径。
+    """
+    import shutil, glob
     found = shutil.which("yt-dlp")
     if found:
         return found
-    venv = Path.home() / ".workbuddy/binaries/python/envs/default/bin/yt-dlp"
-    if venv.exists():
-        return str(venv)
+    candidates = sorted(glob.glob(
+        str(Path.home() / ".workbuddy/binaries/python/versions/*/bin/yt-dlp")))
+    if candidates:
+        return candidates[-1]  # 取版本号最高的那个
     print("[缺少 yt-dlp] 安装: pip install yt-dlp  "
           "(或 brew install yt-dlp),也可用 YT_DLP 环境变量指定路径", file=sys.stderr)
     sys.exit(1)

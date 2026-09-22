@@ -31,13 +31,26 @@ for tool in ffmpeg ffprobe tesseract; do
   fi
 done
 
-# tesseract 中文语言包(chi_sim 是 OCR 板书的前提)
+# tesseract 中文语言包(chi_sim 是 OCR 板书的前提;缺失则自动下载到 tessdata)
 if command -v tesseract >/dev/null 2>&1; then
   if tesseract --list-langs 2>/dev/null | grep -qx "chi_sim"; then
     echo "    chi_sim     OK"
   else
-    echo "    chi_sim     缺失 → 下载 chi_sim.traineddata 到 \$(brew --prefix)/share/tessdata/"
-    MISSING=1
+    TESSDATA_DIR="$(tesseract --list-langs 2>&1 | sed -n 's/.*"\(.*tessdata[^"]*\)".*/\1/p' | head -1)"
+    if [ -z "$TESSDATA_DIR" ] || [ ! -d "$TESSDATA_DIR" ]; then
+      TESSDATA_DIR="$(brew --prefix 2>/dev/null)/share/tessdata"
+    fi
+    echo "    chi_sim     缺失 → 下载 chi_sim.traineddata 到 $TESSDATA_DIR"
+    if [ -d "$TESSDATA_DIR" ] && [ -w "$TESSDATA_DIR" ]; then
+      curl -fL --connect-timeout 15 --max-time 180 \
+        "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/main/chi_sim.traineddata" \
+        -o "$TESSDATA_DIR/chi_sim.traineddata"
+      echo "    chi_sim     已下载"
+    else
+      echo "    [警告] tessdata 目录不可写($TESSDATA_DIR),请手动:"
+      echo "      curl -L https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/main/chi_sim.traineddata -o \"$TESSDATA_DIR/chi_sim.traineddata\""
+      MISSING=1
+    fi
   fi
 fi
 
